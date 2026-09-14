@@ -70,7 +70,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="¿No tienes cuenta? Regístrate aquí"
-        android:textColor="@color/purple_500"
+        android:textColor="@color/primary_emerald"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnLogin" />

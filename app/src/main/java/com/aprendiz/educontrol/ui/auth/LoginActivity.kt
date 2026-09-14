@@ -37,8 +37,10 @@ class LoginActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 val user = database.userDao().login(email, password)
                 if (user != null) {
-                    // TODO: Navegar al HomeActivity (Fase 4)
-                    Toast.makeText(this@LoginActivity, "Bienvenido ${user.email}", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this@LoginActivity, com.aprendiz.educontrol.ui.home.HomeActivity::class.java)
+                    intent.putExtra("USER_ID", user.id)
+                    startActivity(intent)
+                    finish()
                 } else {
                     Toast.makeText(this@LoginActivity, "Credenciales incorrectas", Toast.LENGTH_SHORT).show()
                 }
