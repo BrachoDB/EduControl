@@ -1,66 +1,43 @@
-# Plan de Implementación - Fases 1 y 2: Configuración y Capa de Datos
+# Plan de Implementación - Fase 3: Interfaz de Usuario - Pantallas de Autenticación y Splash
 
-Este plan cubre la inicialización del proyecto Android "EduControl" y la implementación de la capa de persistencia con Room, siguiendo las especificaciones del `README.md`.
+Este plan cubre el desarrollo del flujo inicial de la aplicación, incluyendo la pantalla de bienvenida (Splash) y la gestión de usuarios (Login y Registro).
 
 ## User Review Required
 
 > [!IMPORTANT]
-> El proyecto se encuentra actualmente vacío (solo contiene el `README.md`). Procederé a inicializar la estructura completa del proyecto Android (Gradle, AndroidManifest, carpetas de fuentes).
-
-> [!NOTE]
-> Utilizaré `com.aprendiz.educontrol` como nombre de paquete base. Si prefieres otro, por favor indícalo.
+> Se utilizará `ViewBinding` para la interacción con las vistas.
+> Las actividades se registrarán en el `AndroidManifest.xml`.
+> La navegación inicial será: Splash -> Login -> Register (si es necesario) -> Home (pendiente de Fase 4).
 
 ## Proposed Changes
 
-### Fase 1: Configuración Inicial del Proyecto y Dependencias
+### [Componente] UI - Pantallas de Inicio
 
-#### [NEW] [settings.gradle.kts](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/settings.gradle.kts)
-Configuración de repositorios y nombre del proyecto.
+#### [NEW] [activity_splash.xml](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/res/layout/activity_splash.xml)
+Diseño simple con un logo (o texto representativo) y el nombre de la app.
 
-#### [NEW] [build.gradle.kts](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/build.gradle.kts) (Proyecto)
-Configuración de plugins (Kotlin, Android, KSP).
+#### [NEW] [SplashActivity.kt](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/java/com/aprendiz/educontrol/ui/splash/SplashActivity.kt)
+Lógica para esperar 2 segundos usando `lifecycleScope` y navegar a `LoginActivity`.
 
-#### [NEW] [app/build.gradle.kts](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/build.gradle.kts)
-- Habilitar `viewBinding`.
-- Configurar dependencias de Room (2.6.1), Coroutines y Lifecycle.
-- Configurar SDK (Min: 24, Target: 34).
+#### [NEW] [activity_login.xml](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/res/layout/activity_login.xml)
+Formulario de ingreso: Email, Password, Botón de Login y enlace a Registro.
 
-#### [NEW] Estructura de Directorios
-Creación de los siguientes paquetes bajo `app/src/main/java/com/aprendiz/educontrol/`:
-- `data/`
-- `ui/splash/`
-- `ui/auth/`
-- `ui/home/`
-- `ui/materia/`
+#### [NEW] [LoginActivity.kt](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/java/com/aprendiz/educontrol/ui/auth/LoginActivity.kt)
+Lógica de autenticación consultando la base de datos Room.
 
-#### [NEW] [AndroidManifest.xml](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/AndroidManifest.xml)
-Configuración básica de la aplicación.
+#### [NEW] [activity_register.xml](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/res/layout/activity_register.xml)
+Formulario de registro: Email, Password y Botón de Crear Cuenta.
 
----
+#### [NEW] [RegisterActivity.kt](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/java/com/aprendiz/educontrol/ui/auth/RegisterActivity.kt)
+Lógica para insertar nuevos usuarios en Room, validando que el email no esté duplicado.
 
-### Fase 2: Capa de Datos y Persistencia (Room)
-
-#### [NEW] [UserEntity.kt](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/java/com/aprendiz/educontrol/data/entity/UserEntity.kt)
-Entidad para usuarios: `id`, `email`, `password`.
-
-#### [NEW] [MateriaEntity.kt](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/java/com/aprendiz/educontrol/data/entity/MateriaEntity.kt)
-Entidad para materias: `id`, `userId`, `nombreMateria`, `profesor`.
-
-#### [NEW] [NotaEntity.kt](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/java/com/aprendiz/educontrol/data/entity/NotaEntity.kt)
-Entidad para notas: `id`, `materiaId`, `nombreEvaluacion`, `calificacion`, `porcentaje`.
-
-#### [NEW] DAOs ([UserDao.kt](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/java/com/aprendiz/educontrol/data/dao/UserDao.kt), [MateriaDao.kt](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/java/com/aprendiz/educontrol/data/dao/MateriaDao.kt), [NotaDao.kt](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/java/com/aprendiz/educontrol/data/dao/NotaDao.kt))
-Interfaces para operaciones CRUD en la base de datos.
-
-#### [NEW] [AppDatabase.kt](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/java/com/aprendiz/educontrol/data/AppDatabase.kt)
-Clase abstracta con patrón Singleton para la base de datos Room.
+#### [MODIFY] [AndroidManifest.xml](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/AndroidManifest.xml)
+Declaración de las nuevas actividades y configuración de `SplashActivity` como la actividad de inicio (`LAUNCHER`).
 
 ## Verification Plan
 
-### Automated Tests
-- No se implementarán tests unitarios en esta fase inicial, pero se verificará la compilación del proyecto.
-
 ### Manual Verification
-1. Verificar que el proyecto sincronice correctamente con Gradle.
-2. Comprobar que no haya errores de compilación en las clases de Room (DAOs y Database).
-3. Verificar la creación física de la estructura de carpetas.
+1. Ejecutar la app y verificar que se muestre el Splash durante 2 segundos.
+2. Comprobar la transición automática a la pantalla de Login.
+3. Probar el registro de un nuevo usuario y verificar que se guarde correctamente (intentando loguearse después).
+4. Validar que los campos vacíos muestren errores visuales.

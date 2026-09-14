@@ -18,6 +18,11 @@
 - [x] Crear `NotaDao`.
 - [x] Crear `AppDatabase` (Singleton).
 
-## Verificación
-- [ ] Verificar sincronización de Gradle.
-- [ ] Verificar que no haya errores de compilación.
+## Fase 3: Interfaz de Usuario - Pantallas de Autenticación y Splash
+- [x] Crear `activity_splash.xml`.
+- [x] Crear `SplashActivity.kt` con retraso de 2s.
+- [x] Crear `activity_login.xml`.
+- [x] Crear `LoginActivity.kt` con lógica de Room.
+- [x] Crear `activity_register.xml`.
+- [x] Crear `RegisterActivity.kt` con lógica de Room.
+- [x] Registrar actividades en `AndroidManifest.xml`.
