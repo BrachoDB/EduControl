@@ -1,3 +1,20 @@
 <resources>
     <string name="app_name">EduControl</string>
+    <string name="promedio_general">Promedio General</string>
+    <string name="materias_matriculadas">%1$d Asignaturas Matriculadas</string>
+    <string name="nueva_materia">Nueva Materia</string>
+    <string name="nueva_nota">Nueva Nota</string>
+    <string name="nombre_materia">Nombre de la materia</string>
+    <string name="profesor">Profesor</string>
+    <string name="guardar">Guardar</string>
+    <string name="nombre_evaluacion">Nombre de la evaluación (ej: Examen Final)</string>
+    <string name="calificacion">Calificación (0.0 - 5.0)</string>
+    <string name="porcentaje">Porcentaje (1 - 100)</string>
+    <string name="error_porcentaje_excedido">El porcentaje supera el 100% disponible. Restante: %1$s%%</string>
+    <string name="error_campos_vacios">Por favor llena todos los campos</string>
+    <string name="porcentaje_evaluado">%1$s%% / 100%% Evaluado</string>
+    <string name="promedio_actual">Promedio: %1$s</string>
+    <string name="agregar_materia">Agregar Materia</string>
+    <string name="agregar_nota">Agregar Nota</string>
+    <string name="evaluaciones">Evaluaciones</string>
 </resources>
