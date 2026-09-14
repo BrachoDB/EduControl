@@ -21,6 +21,10 @@ class LoginActivity : AppCompatActivity() {
 
         database = AppDatabase.getDatabase(this)
 
+        // Pre-fill credentials for testing
+        binding.etEmail.setText("test@educontrol.com")
+        binding.etPassword.setText("123456")
+
         binding.btnLogin.setOnClickListener {
             val email = binding.etEmail.text.toString()
             val password = binding.etPassword.text.toString()
