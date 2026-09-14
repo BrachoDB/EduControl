@@ -9,7 +9,8 @@ import com.aprendiz.educontrol.data.entity.MateriaEntity
 import com.aprendiz.educontrol.databinding.ItemMateriaBinding
 
 class HomeAdapter(
-    private val onItemClick: (MateriaEntity) -> Unit
+    private val onItemClick: (MateriaEntity) -> Unit,
+    private val onOptionsClick: (MateriaEntity, android.view.View) -> Unit
 ) : RecyclerView.Adapter<HomeAdapter.ViewHolder>() {
 
     private val materias = mutableListOf<MateriaEntity>()
@@ -59,6 +60,10 @@ class HomeAdapter(
 
             binding.root.setOnClickListener {
                 onItemClick(materia)
+            }
+            
+            binding.ivOptions.setOnClickListener { view ->
+                onOptionsClick(materia, view)
             }
         }
     }

@@ -15,6 +15,14 @@
     <string name="porcentaje_evaluado">%1$s%% / 100%% Evaluado</string>
     <string name="promedio_actual">Promedio: %1$s</string>
     <string name="agregar_materia">Agregar Materia</string>
+    <string name="editar_materia">Editar Materia</string>
     <string name="agregar_nota">Agregar Nota</string>
     <string name="evaluaciones">Evaluaciones</string>
+    <string name="editar">Editar</string>
+    <string name="eliminar">Eliminar</string>
+    <string name="confirmar_eliminar_materia">¿Estás seguro de eliminar esta materia? Se borrarán todas sus notas.</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="materia_eliminada">Materia eliminada</string>
+    <string name="materia_actualizada">Materia actualizada</string>
+    <string name="opciones">Opciones</string>
 </resources>

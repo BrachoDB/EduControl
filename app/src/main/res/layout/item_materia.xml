@@ -61,16 +61,30 @@
             android:id="@+id/chipPromedio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
             android:background="@drawable/bg_chip_approved"
             android:paddingHorizontal="12dp"
             android:paddingVertical="6dp"
             android:textColor="@color/badge_approved_text"
             android:textSize="14sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/ivOptions"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             tools:text="4.5" />
+
+        <ImageView
+            android:id="@+id/ivOptions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:src="@drawable/ic_more_vert"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:tint="@color/text_secondary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:contentDescription="@string/opciones" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

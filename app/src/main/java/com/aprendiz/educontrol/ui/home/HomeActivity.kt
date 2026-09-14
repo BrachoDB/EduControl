@@ -1,5 +1,8 @@
 package com.aprendiz.educontrol.ui.home
 
+import android.view.View
+import android.widget.PopupMenu
+import androidx.appcompat.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -50,13 +53,64 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        adapter = HomeAdapter { materia ->
-            val intent = Intent(this, DetalleMateriaActivity::class.java)
-            intent.putExtra("MATERIA_ID", materia.id)
-            startActivity(intent)
-        }
+        adapter = HomeAdapter(
+            onItemClick = { materia ->
+                val intent = Intent(this, DetalleMateriaActivity::class.java)
+                intent.putExtra("MATERIA_ID", materia.id)
+                startActivity(intent)
+            },
+            onOptionsClick = { materia, view ->
+                showMateriaOptions(materia, view)
+            }
+        )
         binding.rvMaterias.layoutManager = LinearLayoutManager(this)
         binding.rvMaterias.adapter = adapter
+    }
+
+    private fun showMateriaOptions(materia: com.aprendiz.educontrol.data.entity.MateriaEntity, view: android.view.View) {
+        val popup = PopupMenu(this, view)
+        popup.menu.add(0, 1, 0, getString(R.string.editar))
+        popup.menu.add(0, 2, 0, getString(R.string.eliminar))
+        
+        popup.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                1 -> {
+                    // Editar
+                    val intent = Intent(this, AddMateriaActivity::class.java)
+                    intent.putExtra("USER_ID", userId)
+                    intent.putExtra("MATERIA_ID", materia.id)
+                    startActivity(intent)
+                    true
+                }
+                2 -> {
+                    // Eliminar
+                    confirmarEliminarMateria(materia)
+                    true
+                }
+                else -> false
+            }
+        }
+        popup.show()
+    }
+    
+    private fun confirmarEliminarMateria(materia: com.aprendiz.educontrol.data.entity.MateriaEntity) {
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.eliminar))
+            .setMessage(getString(R.string.confirmar_eliminar_materia))
+            .setPositiveButton(getString(R.string.eliminar)) { _, _ ->
+                eliminarMateria(materia)
+            }
+            .setNegativeButton(getString(R.string.cancelar), null)
+            .show()
+    }
+    
+    private fun eliminarMateria(materia: com.aprendiz.educontrol.data.entity.MateriaEntity) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            database.materiaDao().deleteMateria(materia)
+            withContext(Dispatchers.Main) {
+                loadData()
+            }
+        }
     }
 
     private fun loadData() {
