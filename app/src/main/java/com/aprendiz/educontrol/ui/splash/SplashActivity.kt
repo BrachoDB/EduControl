@@ -25,7 +25,7 @@ class SplashActivity : AppCompatActivity() {
             val db = AppDatabase.getDatabase(applicationContext)
             val existing = db.userDao().getUserByEmail("test@educontrol.com")
             if (existing == null) {
-                db.userDao().insertUser(UserEntity(email = "test@educontrol.com", password = "123456"))
+                db.userDao().insertUser(UserEntity(nombre = "Test User", email = "test@educontrol.com", password = "123456"))
             }
         }
 

@@ -35,7 +35,12 @@ class RegisterActivity : AppCompatActivity() {
                 if (existingUser != null) {
                     Toast.makeText(this@RegisterActivity, "El correo ya está registrado", Toast.LENGTH_SHORT).show()
                 } else {
-                    val newUser = UserEntity(email = email, password = password)
+                    val newUser = UserEntity(
+                        nombre = email.substringBefore("@"),
+                        email = email,
+                        password = password,
+                        rol = UserEntity.ROLE_STUDENT
+                    )
                     database.userDao().insertUser(newUser)
                     Toast.makeText(this@RegisterActivity, "Usuario registrado exitosamente", Toast.LENGTH_SHORT).show()
                     finish()
