@@ -1,5 +1,6 @@
 package com.aprendiz.educontrol.ui.teacher.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.aprendiz.educontrol.data.repository.TeacherRepository
 import com.aprendiz.educontrol.data.session.SessionManager
 import com.aprendiz.educontrol.databinding.FragmentTeacherHomeBinding
+import com.aprendiz.educontrol.ui.teacher.classes.TeacherClassDetailActivity
 import kotlinx.coroutines.launch
 
 class TeacherHomeFragment : Fragment() {
@@ -40,7 +42,9 @@ class TeacherHomeFragment : Fragment() {
 
     private fun setupAdapter() {
         teacherClassAdapter = TeacherClassAdapter { selectedClass ->
-            // Click on class for teacher
+            val intent = Intent(requireContext(), TeacherClassDetailActivity::class.java)
+            intent.putExtra("CLASE_ID", selectedClass.claseId)
+            startActivity(intent)
         }
         binding.rvTeacherClasses.layoutManager = LinearLayoutManager(requireContext())
         binding.rvTeacherClasses.adapter = teacherClassAdapter
