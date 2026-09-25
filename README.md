@@ -5,7 +5,7 @@
 ![Room](https://img.shields.io/badge/Jetpack%20Room-2.6.1-4285F4?style=for-the-badge&logo=sqlite&logoColor=white)
 ![Material Design 3](https://img.shields.io/badge/Material%20Design-3-757575?style=for-the-badge&logo=materialdesign&logoColor=white)
 
-**EduControl** es una aplicación móvil nativa para Android desarrollada en Kotlin que permite a estudiantes gestionar su historial académico escolar, registrar asignaturas con sus respectivos profesores y calcular automáticamente promedios ponderados en tiempo real con validación estricta de porcentajes de evaluación.
+**EduControl** es una aplicación móvil nativa para Android desarrollada en Kotlin que permite a estudiantes gestionar su historial académico escolar, registrar asignaturas con sus respectivos profesores, calcular automáticamente promedios ponderados en tiempo real y **simular la nota requerida** para lograr una calificación objetivo final.
 
 ---
 
@@ -19,6 +19,7 @@
 ### 🏠 2. Panel Principal / Dashboard Escolar (`HomeActivity`)
 * **Hero Card (Tarjeta Destacada):** Muestra de forma visual el **Promedio Ponderado General** (`X.XX / 5.0`) del estudiante y la cantidad total de asignaturas matriculadas.
 * **Listado de Materias (`RecyclerView`):** Visualización modular de asignaturas registradas, mostrando el nombre de la materia, nombre del profesor y promedio ponderado acumulado.
+* **Soporte UTF-8 e Idioma Español:** Compatibilidad completa con teclados virtuales para el uso de la letra **ñ**, **Ñ** y acentos en los campos de asignaturas y docentes.
 * **Indicadores Visuales de Desempeño (Badges de Estado):**
   * 🟢 **Aprobado / Sobresaliente (≥ 3.0):** Badge en verde esmeralda suave (`#DCFCE7`) con texto `#15803D`.
   * 🔴 **En Riesgo / Bajo (< 3.0):** Badge en rojo claro (`#FEE2E2`) con texto `#B91C1C`.
@@ -31,10 +32,27 @@
 * **Barra de Avance Ponderado (`LinearProgressIndicator`):** Indicador visual que muestra el acumulado del porcentaje calificado (`X% / 100% Evaluado`).
 * **Listado de Evaluaciones:** Tarjetas detalladas de calificaciones mostrando la actividad escolar (ej: *Examen Final*, *Taller Grupal*), el peso porcentual y la nota obtenida (`0.0 - 5.0`).
 
-### ➕ 4. Registro y Validación Estricta de Notas (`AddNotaActivity`)
+### 🎯 4. Simulador de Metas ("¿Qué nota necesito?")
+Sección interactiva dentro de `DetalleMateriaActivity` en una tarjeta de **Material Design 3** donde el estudiante ingresa su **Nota Objetivo** (ej: `4.0`) y el sistema realiza un cálculo inverso en tiempo real:
+* 🧮 **Cálculo Inverso:** Evalúa los puntos ya acumulados y determina la calificación exacta requerida sobre el porcentaje restante de la materia.
+* 🚦 **Respuestas Dinámicas e Indicadores de Estado:**
+  * 🟢 **Meta Alcanzable ($\le 5.0$):** Informa exactamente la nota necesaria en el porcentaje restante.
+  * 🔴 **Meta Difícil (> 5.0):** Alerta de imposibilidad matemática si la nota requerida supera la escala de `5.0`.
+  * 🎉 **Meta Alcanzada:** Notifica al usuario que sus notas acumuladas ya garantizan el objetivo deseado.
+  * 🔒 **Materia Cerrada (100% evaluado):** Inhabilita la entrada e indica que la nota final ya está fijada.
+
+### ➕ 5. Registro y Validación Estricta de Notas (`AddNotaActivity`)
 * **Lógica de Control Porcentual:** Sistema inteligente que previene errores impidiendo registrar notas cuyo porcentaje supere el 100% disponible de la asignatura.
 * **Retroalimentación Dinámica:** En caso de exceso, muestra un mensaje de error personalizado indicando exactamente cuánto porcentaje resta por evaluar (ej: *"El porcentaje supera el 100% disponible. Restante: 30%"*).
 * **Validación de Rangos:** Restricción estricta de calificaciones entre `0.0` y `5.0` y porcentajes entre `1%` y `100%`.
+
+---
+
+## 🧪 Pruebas Unitarias Automatizadas (`src/test`)
+
+La aplicación incluye un conjunto de pruebas unitarias automatizadas ejecutadas mediante JUnit:
+* **`SimuladorMetasTest.kt`:** Prueba los cálculos matemáticos del simulador de metas (cálculos estándar, metas alcanzadas, metas imposibles mayores a 5.0 y materias cerradas al 100%).
+* **`MateriaNombreTest.kt`:** Garantiza el soporte de caracteres hispanos ('ñ', 'Ñ', acentos) en la asignación de entidades de materias.
 
 ---
 
@@ -69,7 +87,7 @@ com.aprendiz.educontrol
 * **UI & Layouts:** XML Layouts, `ConstraintLayout`, `Material Design 3 (M3)`, `ViewBinding`
 * **Persistencia Local:** Jetpack Room `2.6.1` con **KSP** (*Kotlin Symbol Processing*)
 * **Concurrencia:** Kotlin Coroutines (`lifecycleScope`, `Dispatchers.IO`, `withContext`)
-* **Navegación:** Activities e Intents explícitos con paso de parámetros (`USER_ID`, `MATERIA_ID`)
+* **Pruebas:** JUnit 4 (`testDebugUnitTest`)
 
 ---
 
@@ -118,10 +136,14 @@ Para garantizar una experiencia limpia e intuitiva, se diseñó un tema personal
    * Seleccionar la carpeta raíz del proyecto `EduControl`.
 3. **Sincronizar Gradle:**
    * Permitir que Gradle descargue las dependencias necesarias (`Room`, `Material Design`, `KSP`).
-4. **Ejecutar la App:**
+4. **Ejecutar Pruebas Unitarias:**
+   ```bash
+   ./gradlew test
+   ```
+5. **Ejecutar la App:**
    * Seleccionar un emulador o dispositivo físico con **Android 7.0 (API 24)** o superior.
    * Hacer clic en **Run** (`Shift + F10`).
-5. **Credenciales de Prueba Rápida:**
+6. **Credenciales de Prueba Rápida:**
    * **Email:** `test@educontrol.com`
    * **Contraseña:** `123456`
 
