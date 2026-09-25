@@ -57,8 +57,8 @@ class AddMateriaActivity : AppCompatActivity() {
     }
 
     private fun guardarMateria() {
-        val nombre = binding.etNombreMateria.text.toString()
-        val profesor = binding.etProfesor.text.toString()
+        val nombre = binding.etNombreMateria.text.toString().trim()
+        val profesor = binding.etProfesor.text.toString().trim()
 
         if (nombre.isEmpty() || profesor.isEmpty()) {
             Toast.makeText(this, getString(R.string.error_campos_vacios), Toast.LENGTH_SHORT).show()
