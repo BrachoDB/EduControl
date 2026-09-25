@@ -9,7 +9,7 @@
         android:theme="@style/Theme.EduControl">
 
         <activity
-            android:name=".ui.splash.SplashActivity"
+            android:name=".ui.auth.DemoRoleActivity"
             android:exported="true"
             android:theme="@style/Theme.EduControl.NoActionBar">
             <intent-filter>
@@ -17,6 +17,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ui.student.StudentMainActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.teacher.TeacherMainActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.splash.SplashActivity"
+            android:exported="false" />
 
         <activity
             android:name=".ui.auth.LoginActivity"

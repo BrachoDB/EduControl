@@ -1,21 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary_emerald">#0D9488</color>
+    <!-- Paleta Principal EduControl M3 -->
+    <color name="navy_hero">#0F172A</color>
+    <color name="teal_dark">#0F766E</color>
     <color name="dark_teal_hero">#115E59</color>
-    <color name="surface_background">#F0FDF4</color>
+    <color name="primary_emerald">#0D9488</color>
+    <color name="emerald_light">#14B8A6</color>
+    <color name="surface_background">#F8FAFC</color>
     <color name="card_surface">#FFFFFF</color>
     <color name="card_stroke">#E2E8F0</color>
 
+    <!-- Estados Académicos Semánticos -->
+    <!-- 🟢 Aprobado / Excelente -->
     <color name="badge_approved_bg">#DCFCE7</color>
     <color name="badge_approved_text">#15803D</color>
 
+    <!-- 🔴 En Riesgo / Bajo -->
     <color name="badge_risk_bg">#FEE2E2</color>
     <color name="badge_risk_text">#B91C1C</color>
 
-    <color name="form_button_accent">#0F766E</color>
-    <color name="text_primary">#1E293B</color>
-    <color name="text_secondary">#64748B</color>
+    <!-- 🟡 Pendiente / En Progreso -->
+    <color name="badge_pending_bg">#FEF3C7</color>
+    <color name="badge_pending_text">#B45309</color>
 
+    <!-- 🔵 Entregado / Completado -->
+    <color name="badge_completed_bg">#E0F2FE</color>
+    <color name="badge_completed_text">#0369A1</color>
+
+    <!-- Texto y Neutros -->
+    <color name="text_primary">#0F172A</color>
+    <color name="text_secondary">#64748B</color>
+    <color name="form_button_accent">#0F766E</color>
+
+    <!-- Básicos -->
     <color name="white">#FFFFFFFF</color>
     <color name="black">#FF000000</color>
     <color name="transparent">#00000000</color>

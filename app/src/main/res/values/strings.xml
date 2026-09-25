@@ -1,5 +1,26 @@
 <resources>
     <string name="app_name">EduControl</string>
+    <string name="app_tagline">Tu progreso académico, en un solo lugar.</string>
+
+    <!-- Acceso Demo -->
+    <string name="rol_estudiante_titulo">👨‍🎓 ESTUDIANTE</string>
+    <string name="rol_estudiante_subtitulo">Explorar como estudiante</string>
+    <string name="rol_profesor_titulo">👨‍🏫 PROFESOR</string>
+    <string name="rol_profesor_subtitulo">Explorar como profesor</string>
+    <string name="seleccionar_estudiante_demo">Selecciona una cuenta demo de Estudiante</string>
+    <string name="seleccionar_profesor_demo">Selecciona una cuenta demo de Profesor</string>
+
+    <!-- Navegación Estudiante -->
+    <string name="nav_inicio">Inicio</string>
+    <string name="nav_clases">Mis Clases</string>
+    <string name="nav_actividades">Actividades</string>
+    <string name="nav_metas">Metas</string>
+    <string name="nav_perfil">Perfil</string>
+
+    <!-- Navegación Profesor -->
+    <string name="nav_rendimiento">Rendimiento</string>
+
+    <!-- General y Asignaturas -->
     <string name="promedio_general">Promedio General</string>
     <string name="materias_matriculadas">%1$d Asignaturas Matriculadas</string>
     <string name="nueva_materia">Nueva Materia</string>
