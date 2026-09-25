@@ -1,5 +1,6 @@
 package com.aprendiz.educontrol.ui.teacher.classes
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
@@ -15,6 +16,7 @@ import com.aprendiz.educontrol.data.entity.ActividadEntity
 import com.aprendiz.educontrol.data.repository.TeacherActivityGradeModel
 import com.aprendiz.educontrol.data.repository.TeacherRepository
 import com.aprendiz.educontrol.databinding.ActivityTeacherClassDetailBinding
+import com.aprendiz.educontrol.ui.teacher.performance.TeacherStudentProfileActivity
 import kotlinx.coroutines.launch
 import java.util.Locale
 
@@ -47,7 +49,11 @@ class TeacherClassDetailActivity : AppCompatActivity() {
     }
 
     private fun setupAdapters() {
-        studentAdapter = TeacherStudentAdapter { _ -> }
+        studentAdapter = TeacherStudentAdapter { student ->
+            val intent = Intent(this, TeacherStudentProfileActivity::class.java)
+            intent.putExtra("STUDENT_ID", student.studentId)
+            startActivity(intent)
+        }
         binding.rvStudents.layoutManager = LinearLayoutManager(this)
         binding.rvStudents.adapter = studentAdapter
 
