@@ -10,7 +10,7 @@
     <string name="nombre_evaluacion">Nombre de la evaluación (ej: Examen Final)</string>
     <string name="calificacion">Calificación (0.0 - 5.0)</string>
     <string name="porcentaje">Porcentaje (1 - 100)</string>
-    <string name="error_porcentaje_excedido">El porcentaje supera el 100% disponible. Restante: %1$s%%</string>
+    <string name="error_porcentaje_excedido">El porcentaje supera el 100%% disponible. Restante: %1$s%%</string>
     <string name="error_campos_vacios">Por favor llena todos los campos</string>
     <string name="porcentaje_evaluado">%1$s%% / 100%% Evaluado</string>
     <string name="promedio_actual">Promedio: %1$s</string>
@@ -25,4 +25,13 @@
     <string name="materia_eliminada">Materia eliminada</string>
     <string name="materia_actualizada">Materia actualizada</string>
     <string name="opciones">Opciones</string>
+
+    <!-- Simulador de Metas -->
+    <string name="simulador_titulo">Simulador de Metas</string>
+    <string name="simulador_subtitulo">¿Qué nota necesito?</string>
+    <string name="nota_objetivo_label">Nota Objetivo (0.0 - 5.0)</string>
+    <string name="simulador_resultado_exito">Necesitas obtener %1$s en el %2$s%% restante.</string>
+    <string name="simulador_materia_cerrada">Materia 100%% evaluada. La nota final ya está cerrada.</string>
+    <string name="simulador_meta_imposible">Meta difícil de alcanzar: Requerirías un %1$s en el %2$s%% restante.</string>
+    <string name="simulador_meta_ya_alcanzada">¡Meta alcanzada! Ya aseguraste esta nota acumulando %1$s de los %2$s puntos necesarios.</string>
 </resources>

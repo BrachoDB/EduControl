@@ -60,6 +60,76 @@
                 app:trackThickness="8dp"
                 tools:progress="70" />
 
+            <!-- Simulador de Metas ("¿Qué nota necesito?") -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardSimulador"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/card_surface"
+                app:strokeColor="@color/card_stroke"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/simulador_titulo"
+                        android:textColor="@color/dark_teal_hero"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/simulador_subtitulo"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="13sp" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilNotaObjetivo"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:hint="@string/nota_objetivo_label"
+                        app:boxStrokeColor="@color/primary_emerald"
+                        app:hintTextColor="@color/primary_emerald">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etNotaObjetivo"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="numberDecimal"
+                            android:textColor="@color/text_primary"
+                            android:textSize="16sp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <TextView
+                        android:id="@+id/tvResultadoSimulador"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:background="@drawable/bg_simulador_result"
+                        android:padding="12dp"
+                        android:textColor="@color/badge_approved_text"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:visibility="gone"
+                        tools:text="Necesitas obtener 4.20 en el 40% restante."
+                        tools:visibility="visible" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
             <!-- Listado de Evaluaciones -->
             <TextView
                 android:layout_width="match_parent"
