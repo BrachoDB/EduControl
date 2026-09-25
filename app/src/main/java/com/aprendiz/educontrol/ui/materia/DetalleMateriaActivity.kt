@@ -9,21 +9,21 @@ import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.aprendiz.educontrol.R
-import com.aprendiz.educontrol.data.AppDatabase
-import com.aprendiz.educontrol.data.entity.MateriaEntity
+import com.aprendiz.educontrol.data.repository.StudentRepository
+import com.aprendiz.educontrol.data.session.SessionManager
 import com.aprendiz.educontrol.databinding.ActivityDetalleMateriaBinding
-import kotlinx.coroutines.Dispatchers
+import com.aprendiz.educontrol.ui.student.classes.TimelineAdapter
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.Locale
 
 class DetalleMateriaActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDetalleMateriaBinding
-    private lateinit var database: AppDatabase
-    private lateinit var adapter: NotasAdapter
+    private lateinit var sessionManager: SessionManager
+    private lateinit var studentRepository: StudentRepository
+    private lateinit var timelineAdapter: TimelineAdapter
+
     private var materiaId: Long = -1L
-    private var currentMateria: MateriaEntity? = null
     private var porcentajeAcumulado = 0.0
     private var promedioPonderadoAcumulado = 0.0
 
@@ -34,12 +34,17 @@ class DetalleMateriaActivity : AppCompatActivity() {
 
         materiaId = intent.getLongExtra("MATERIA_ID", -1L)
         if (materiaId == -1L) {
+            materiaId = intent.getLongExtra("CLASE_ID", -1L)
+        }
+
+        if (materiaId == -1L) {
             finish()
             return
         }
 
-        database = AppDatabase.getDatabase(this)
-        
+        sessionManager = SessionManager(this)
+        studentRepository = StudentRepository(this)
+
         setupRecyclerView()
         setupSimulador()
 
@@ -57,9 +62,9 @@ class DetalleMateriaActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        adapter = NotasAdapter()
-        binding.rvNotas.layoutManager = LinearLayoutManager(this)
-        binding.rvNotas.adapter = adapter
+        timelineAdapter = TimelineAdapter()
+        binding.rvTimeline.layoutManager = LinearLayoutManager(this)
+        binding.rvTimeline.adapter = timelineAdapter
     }
 
     private fun setupSimulador() {
@@ -122,34 +127,21 @@ class DetalleMateriaActivity : AppCompatActivity() {
     }
 
     private fun loadData() {
-        lifecycleScope.launch(Dispatchers.IO) {
-            currentMateria = database.materiaDao().getMateriaById(materiaId)
-            val notas = database.notaDao().getNotasByMateria(materiaId)
-            
-            promedioPonderadoAcumulado = 0.0
-            porcentajeAcumulado = 0.0
-            
-            for (nota in notas) {
-                promedioPonderadoAcumulado += nota.calificacion * (nota.porcentaje / 100.0)
-                porcentajeAcumulado += nota.porcentaje
-            }
+        val studentId = sessionManager.getCurrentUserId()
+        lifecycleScope.launch {
+            val detail = studentRepository.getStudentClassDetail(studentId, materiaId)
+            if (detail != null) {
+                binding.tvMateriaTitle.text = detail.nombreClase
+                binding.tvProfesor.text = detail.profesor
 
-            withContext(Dispatchers.Main) {
-                currentMateria?.let { materia ->
-                    binding.tvMateriaTitle.text = "${materia.nombreMateria} - ${materia.profesor}"
-                }
-                
-                binding.tvPromedioActual.text = getString(R.string.promedio_actual, String.format(Locale.getDefault(), "%.2f", promedioPonderadoAcumulado))
-                if (promedioPonderadoAcumulado >= 3.0) {
-                    binding.tvPromedioActual.setTextColor(ContextCompat.getColor(this@DetalleMateriaActivity, R.color.primary_emerald))
-                } else {
-                    binding.tvPromedioActual.setTextColor(ContextCompat.getColor(this@DetalleMateriaActivity, R.color.badge_risk_text))
-                }
-                
-                binding.tvPorcentajeEvaluado.text = getString(R.string.porcentaje_evaluado, String.format(Locale.getDefault(), "%.0f", porcentajeAcumulado))
+                promedioPonderadoAcumulado = detail.promedioActual
+                porcentajeAcumulado = detail.porcentajeEvaluado
+
+                binding.tvPromedioActual.text = String.format(Locale.getDefault(), "%.2f", promedioPonderadoAcumulado)
+                binding.tvPorcentajeEvaluado.text = "${porcentajeAcumulado.toInt()}% Evaluado"
                 binding.progressAvance.progress = porcentajeAcumulado.toInt()
-                
-                adapter.submitList(notas)
+
+                timelineAdapter.submitList(detail.timelineItems)
                 calcularNotaNecesaria()
             }
         }

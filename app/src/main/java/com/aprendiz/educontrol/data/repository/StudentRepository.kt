@@ -2,7 +2,6 @@ package com.aprendiz.educontrol.data.repository
 
 import android.content.Context
 import com.aprendiz.educontrol.data.AppDatabase
-import com.aprendiz.educontrol.data.entity.ActividadEntity
 import com.aprendiz.educontrol.data.entity.EntregaEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -33,6 +32,32 @@ data class StudentDashboardData(
     val classes: List<StudentClassSummaryModel>,
     val upcomingActivities: List<StudentUpcomingActivityModel>,
     val alertMessage: String?
+)
+
+sealed class TimelineListItem {
+    data class MonthHeader(val monthName: String) : TimelineListItem()
+    data class ActivityItem(
+        val actividadId: Long,
+        val titulo: String,
+        val descripcion: String,
+        val tipo: String,
+        val porcentaje: Double,
+        val fechaEntrega: String,
+        val estado: String,
+        val nota: Double?,
+        val retroalimentacion: String?
+    ) : TimelineListItem()
+}
+
+data class StudentClassDetailData(
+    val claseId: Long,
+    val nombreClase: String,
+    val codigoClase: String,
+    val profesor: String,
+    val promedioActual: Double,
+    val porcentajeEvaluado: Double,
+    val colorTheme: String,
+    val timelineItems: List<TimelineListItem>
 )
 
 class StudentRepository(context: Context) {
@@ -68,26 +93,16 @@ class StudentRepository(context: Context) {
                     } else if (entrega.estado == EntregaEntity.STATUS_PENDING) {
                         upcomingActivities.add(
                             StudentUpcomingActivityModel(
-                                actividadId = act.id,
-                                claseId = clase.id,
-                                nombreClase = clase.nombreClase,
-                                titulo = act.titulo,
-                                tipo = act.tipo,
-                                fechaEntrega = act.fechaEntrega,
-                                porcentaje = act.porcentaje
+                                actividadId = act.id, claseId = clase.id, nombreClase = clase.nombreClase,
+                                titulo = act.titulo, tipo = act.tipo, fechaEntrega = act.fechaEntrega, porcentaje = act.porcentaje
                             )
                         )
                     }
                 } else {
                     upcomingActivities.add(
                         StudentUpcomingActivityModel(
-                            actividadId = act.id,
-                            claseId = clase.id,
-                            nombreClase = clase.nombreClase,
-                            titulo = act.titulo,
-                            tipo = act.tipo,
-                            fechaEntrega = act.fechaEntrega,
-                            porcentaje = act.porcentaje
+                            actividadId = act.id, claseId = clase.id, nombreClase = clase.nombreClase,
+                            titulo = act.titulo, tipo = act.tipo, fechaEntrega = act.fechaEntrega, porcentaje = act.porcentaje
                         )
                     )
                 }
@@ -95,12 +110,8 @@ class StudentRepository(context: Context) {
 
             classSummaries.add(
                 StudentClassSummaryModel(
-                    claseId = clase.id,
-                    nombreClase = clase.nombreClase,
-                    profesor = teacherName,
-                    promedio = promedioPonderadoClase,
-                    porcentajeEvaluado = porcentajeEvaluadoClase,
-                    colorTheme = clase.colorTheme
+                    claseId = clase.id, nombreClase = clase.nombreClase, profesor = teacherName,
+                    promedio = promedioPonderadoClase, porcentajeEvaluado = porcentajeEvaluadoClase, colorTheme = clase.colorTheme
                 )
             )
 
@@ -125,6 +136,70 @@ class StudentRepository(context: Context) {
             classes = classSummaries,
             upcomingActivities = upcomingActivities,
             alertMessage = alertMessage
+        )
+    }
+
+    suspend fun getStudentClassDetail(studentId: Long, claseId: Long): StudentClassDetailData? = withContext(Dispatchers.IO) {
+        val clase = db.claseDao().getClaseById(claseId) ?: return@withContext null
+        val teacher = db.userDao().getUserById(clase.teacherId)
+        val teacherName = teacher?.nombre ?: "Profesor"
+
+        val actividades = db.actividadDao().getActividadesByClase(claseId)
+
+        var promedioPonderadoClase = 0.0
+        var porcentajeEvaluadoClase = 0.0
+
+        val timelineMap = mutableMapOf<String, MutableList<TimelineListItem.ActivityItem>>()
+
+        for (act in actividades) {
+            val entrega = db.entregaDao().getEntrega(act.id, studentId)
+            val calificacion = if (entrega != null) db.calificacionDao().getCalificacionByEntrega(entrega.id) else null
+
+            var estado = EntregaEntity.STATUS_PENDING
+            var notaVal: Double? = null
+            var retro: String? = null
+
+            if (calificacion != null) {
+                promedioPonderadoClase += calificacion.nota * (act.porcentaje / 100.0)
+                porcentajeEvaluadoClase += act.porcentaje
+                estado = EntregaEntity.STATUS_GRADED
+                notaVal = calificacion.nota
+                retro = calificacion.retroalimentacion
+            } else if (entrega != null) {
+                estado = entrega.estado
+            }
+
+            val item = TimelineListItem.ActivityItem(
+                actividadId = act.id,
+                titulo = act.titulo,
+                descripcion = act.descripcion,
+                tipo = act.tipo,
+                porcentaje = act.porcentaje,
+                fechaEntrega = act.fechaEntrega,
+                estado = estado,
+                nota = notaVal,
+                retroalimentacion = retro
+            )
+
+            val month = act.mesTimeline.ifEmpty { "GENERAL" }
+            timelineMap.getOrPut(month) { mutableListOf() }.add(item)
+        }
+
+        val timelineList = mutableListOf<TimelineListItem>()
+        for ((month, items) in timelineMap) {
+            timelineList.add(TimelineListItem.MonthHeader(monthName = month))
+            timelineList.addAll(items)
+        }
+
+        StudentClassDetailData(
+            claseId = clase.id,
+            nombreClase = clase.nombreClase,
+            codigoClase = clase.codigoClase,
+            profesor = teacherName,
+            promedioActual = promedioPonderadoClase,
+            porcentajeEvaluado = porcentajeEvaluadoClase,
+            colorTheme = clase.colorTheme,
+            timelineItems = timelineList
         )
     }
 }
