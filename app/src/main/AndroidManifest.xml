@@ -23,6 +23,10 @@
             android:exported="false" />
 
         <activity
+            android:name=".ui.student.activities.ActivityDetailActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".ui.teacher.TeacherMainActivity"
             android:exported="false" />
 

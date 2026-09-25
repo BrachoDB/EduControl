@@ -2,9 +2,12 @@ package com.aprendiz.educontrol.data.repository
 
 import android.content.Context
 import com.aprendiz.educontrol.data.AppDatabase
-import com.aprendiz.educontrol.data.entity.EntregaEntity
+import com.aprendiz.educontrol.data.entity.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 data class StudentClassSummaryModel(
     val claseId: Long,
@@ -58,6 +61,21 @@ data class StudentClassDetailData(
     val porcentajeEvaluado: Double,
     val colorTheme: String,
     val timelineItems: List<TimelineListItem>
+)
+
+data class StudentActivityItemModel(
+    val actividadId: Long,
+    val claseId: Long,
+    val nombreClase: String,
+    val titulo: String,
+    val descripcion: String,
+    val tipo: String,
+    val porcentaje: Double,
+    val fechaEntrega: String,
+    val estado: String,
+    val nota: Double?,
+    val retroalimentacion: String?,
+    val contenidoRespuesta: String? = null
 )
 
 class StudentRepository(context: Context) {
@@ -201,5 +219,127 @@ class StudentRepository(context: Context) {
             colorTheme = clase.colorTheme,
             timelineItems = timelineList
         )
+    }
+
+    suspend fun getStudentActivitiesList(studentId: Long): List<StudentActivityItemModel> = withContext(Dispatchers.IO) {
+        val clases = db.claseDao().getClasesByStudent(studentId)
+        val resultList = mutableListOf<StudentActivityItemModel>()
+
+        for (clase in clases) {
+            val actividades = db.actividadDao().getActividadesByClase(clase.id)
+            for (act in actividades) {
+                val entrega = db.entregaDao().getEntrega(act.id, studentId)
+                val calificacion = if (entrega != null) db.calificacionDao().getCalificacionByEntrega(entrega.id) else null
+
+                val estado = calificacion?.let { EntregaEntity.STATUS_GRADED } ?: (entrega?.estado ?: EntregaEntity.STATUS_PENDING)
+
+                resultList.add(
+                    StudentActivityItemModel(
+                        actividadId = act.id,
+                        claseId = clase.id,
+                        nombreClase = clase.nombreClase,
+                        titulo = act.titulo,
+                        descripcion = act.descripcion,
+                        tipo = act.tipo,
+                        porcentaje = act.porcentaje,
+                        fechaEntrega = act.fechaEntrega,
+                        estado = estado,
+                        nota = calificacion?.nota,
+                        retroalimentacion = calificacion?.retroalimentacion,
+                        contenidoRespuesta = entrega?.contenidoRespuesta
+                    )
+                )
+            }
+        }
+        resultList
+    }
+
+    suspend fun submitTask(studentId: Long, actividadId: Long, respuestaTexto: String) = withContext(Dispatchers.IO) {
+        val todayStr = SimpleDateFormat("dd MMM", Locale.getDefault()).format(Date())
+        val existingEntrega = db.entregaDao().getEntrega(actividadId, studentId)
+
+        if (existingEntrega == null) {
+            db.entregaDao().insertEntrega(
+                EntregaEntity(
+                    actividadId = actividadId,
+                    studentId = studentId,
+                    contenidoRespuesta = respuestaTexto,
+                    fechaEntrega = todayStr,
+                    estado = EntregaEntity.STATUS_SUBMITTED
+                )
+            )
+        } else {
+            db.entregaDao().insertEntrega(
+                existingEntrega.copy(
+                    contenidoRespuesta = respuestaTexto,
+                    fechaEntrega = todayStr,
+                    estado = EntregaEntity.STATUS_SUBMITTED
+                )
+            )
+        }
+    }
+
+    suspend fun submitQuiz(studentId: Long, actividadId: Long, respuestasSeleccionadas: Map<Long, Int>): Double = withContext(Dispatchers.IO) {
+        val todayStr = SimpleDateFormat("dd MMM", Locale.getDefault()).format(Date())
+        val preguntas = db.preguntaQuizDao().getPreguntasByActividad(actividadId)
+
+        var correctCount = 0
+        for (p in preguntas) {
+            val selected = respuestasSeleccionadas[p.id]
+            if (selected != null && selected == p.opcionCorrecta) {
+                correctCount++
+            }
+        }
+
+        val calculatedGrade = if (preguntas.isNotEmpty()) {
+            (correctCount.toDouble() / preguntas.size) * 5.0
+        } else {
+            5.0
+        }
+
+        var entrega = db.entregaDao().getEntrega(actividadId, studentId)
+        if (entrega == null) {
+            db.entregaDao().insertEntrega(
+                EntregaEntity(
+                    actividadId = actividadId,
+                    studentId = studentId,
+                    contenidoRespuesta = "Quiz completado ($correctCount de ${preguntas.size} correctas)",
+                    fechaEntrega = todayStr,
+                    estado = EntregaEntity.STATUS_GRADED
+                )
+            )
+            entrega = db.entregaDao().getEntrega(actividadId, studentId)
+        }
+
+        if (entrega != null) {
+            val retroText = "Autocorregido: $correctCount de ${preguntas.size} respuestas correctas."
+            db.calificacionDao().insertCalificacion(
+                CalificacionEntity(
+                    entregaId = entrega.id,
+                    nota = calculatedGrade,
+                    retroalimentacion = retroText,
+                    fechaCalificacion = todayStr
+                )
+            )
+
+            for ((preguntaId, opcionSel) in respuestasSeleccionadas) {
+                val pregunta = preguntas.firstOrNull { it.id == preguntaId }
+                val isCorrect = pregunta != null && pregunta.opcionCorrecta == opcionSel
+                db.respuestaQuizDao().insertRespuesta(
+                    RespuestaQuizEntity(
+                        entregaId = entrega.id,
+                        preguntaId = preguntaId,
+                        respuestaSeleccionada = opcionSel,
+                        esCorrecta = isCorrect
+                    )
+                )
+            }
+        }
+
+        calculatedGrade
+    }
+
+    suspend fun getQuestionsForQuiz(actividadId: Long): List<PreguntaQuizEntity> = withContext(Dispatchers.IO) {
+        db.preguntaQuizDao().getPreguntasByActividad(actividadId)
     }
 }
