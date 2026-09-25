@@ -1,133 +1,132 @@
 # 📚 EduControl - Control de Calificaciones Escolares
 
-Aplicación móvil desarrollada en Android (Kotlin) para la gestión académica escolar y cálculo automático de promedios ponderados por periodo/asignatura, utilizando persistencia de datos local con Jetpack Room y arquitectura basada en Activities.
+![Android Studio](https://img.shields.io/badge/Android%20Studio-2026.1+-3DDC84?style=for-the-badge&logo=android-studio&logoColor=white)
+![Kotlin](https://img.shields.io/badge/Kotlin-1.9+-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white)
+![Room](https://img.shields.io/badge/Jetpack%20Room-2.6.1-4285F4?style=for-the-badge&logo=sqlite&logoColor=white)
+![Material Design 3](https://img.shields.io/badge/Material%20Design-3-757575?style=for-the-badge&logo=materialdesign&logoColor=white)
+
+**EduControl** es una aplicación móvil nativa para Android desarrollada en Kotlin que permite a estudiantes gestionar su historial académico escolar, registrar asignaturas con sus respectivos profesores y calcular automáticamente promedios ponderados en tiempo real con validación estricta de porcentajes de evaluación.
 
 ---
 
-## 🛠️ Stack Tecnológico
-* **Lenguaje:** Kotlin
-* **Interfaz de Usuario:** XML con `ConstraintLayout`, `Material Design 3 (M3)` y `ViewBinding`
-* **Persistencia de Datos:** Jetpack Room (Base de datos SQLite local)
-* **Concurrencia:** Kotlin Coroutines (`lifecycleScope` / `Dispatchers.IO`)
-* **Navegación:** Activities e Intents explícitos con paso de parámetros (`putExtra`)
+## 🚀 Características Principales
+
+### 🔐 1. Módulo de Autenticación y Usuarios
+* **Pantalla de Bienvenida (Splash Screen):** Carga inicial fluida con redirección automática y pre-creación asíncrona de cuenta de pruebas (`test@educontrol.com` / `123456`).
+* **Registro de Usuarios:** Creación de nuevas cuentas en la base de datos SQLite local con validación de campos y unicidad de correo electrónico.
+* **Inicio de Sesión:** Autenticación local mediante Jetpack Room vinculando la sesión activa (`USER_ID`) a las asignaturas del usuario.
+
+### 🏠 2. Panel Principal / Dashboard Escolar (`HomeActivity`)
+* **Hero Card (Tarjeta Destacada):** Muestra de forma visual el **Promedio Ponderado General** (`X.XX / 5.0`) del estudiante y la cantidad total de asignaturas matriculadas.
+* **Listado de Materias (`RecyclerView`):** Visualización modular de asignaturas registradas, mostrando el nombre de la materia, nombre del profesor y promedio ponderado acumulado.
+* **Indicadores Visuales de Desempeño (Badges de Estado):**
+  * 🟢 **Aprobado / Sobresaliente (≥ 3.0):** Badge en verde esmeralda suave (`#DCFCE7`) con texto `#15803D`.
+  * 🔴 **En Riesgo / Bajo (< 3.0):** Badge en rojo claro (`#FEE2E2`) con texto `#B91C1C`.
+* **Menú Contextual de Gestión:** Opciones mediante `PopupMenu` para:
+  * **Editar Asignatura:** Modificar nombre o docente.
+  * **Eliminar Asignatura:** Eliminación con modal de confirmación (`AlertDialog`) y borrado en cascada en la base de datos local (`CASCADE`).
+
+### 📝 3. Gestión de Asignaturas y Evaluación Ponderada (`DetalleMateriaActivity`)
+* **Métrica en Tiempo Real:** Cálculo automático del promedio parcial ponderado según el porcentaje evaluado hasta el momento.
+* **Barra de Avance Ponderado (`LinearProgressIndicator`):** Indicador visual que muestra el acumulado del porcentaje calificado (`X% / 100% Evaluado`).
+* **Listado de Evaluaciones:** Tarjetas detalladas de calificaciones mostrando la actividad escolar (ej: *Examen Final*, *Taller Grupal*), el peso porcentual y la nota obtenida (`0.0 - 5.0`).
+
+### ➕ 4. Registro y Validación Estricta de Notas (`AddNotaActivity`)
+* **Lógica de Control Porcentual:** Sistema inteligente que previene errores impidiendo registrar notas cuyo porcentaje supere el 100% disponible de la asignatura.
+* **Retroalimentación Dinámica:** En caso de exceso, muestra un mensaje de error personalizado indicando exactamente cuánto porcentaje resta por evaluar (ej: *"El porcentaje supera el 100% disponible. Restante: 30%"*).
+* **Validación de Rangos:** Restricción estricta de calificaciones entre `0.0` y `5.0` y porcentajes entre `1%` y `100%`.
 
 ---
 
-## 🎨 Sistema de Diseño y Requisitos Visuales (UI/UX)
+## 🛠️ Arquitectura y Stack Tecnológico
 
-Para alejar la interfaz de apariencias genéricas o grises, la aplicación implementa una estética limpia y moderna basada en tonos **verde esmeralda, turquesa/teal y menta**, combinados con tarjetas translúcidas de bordes redondeados y fondos suaves.
+La aplicación sigue los principios recomendados por Android Jetpack con una arquitectura limpia dividida en capas de **Presentación** y **Datos**:
 
-### 🎨 Paleta de Colores (`res/values/colors.xml`)
-* **Primary / Emerald Accent:** `#0D9488` (Teal / Esmeralda principal para cabeceras de promedio, badges y acciones clave)
-* **Dark Teal / Hero:** `#115E59` (Contenedor principal del resumen semestral/académico)
-* **Surface Background:** `#F0FDF4` / `#F8FAFC` (Fondo general suave para descanso visual)
-* **Card Surface:** `#FFFFFF` con trazo `#E2E8F0` y elevaciones sutiles (`cardCornerRadius="16dp"` a `20dp"`)
-* **Score Badges (Semáforo de Notas):**
-  * *Aprobado / Sobresaliente (≥ 3.0):* Fondo `#DCFCE7`, texto `#15803D`
-  * *En Riesgo / Bajo (< 3.0):* Fondo `#FEE2E2`, texto `#B91C1C`
-* **Form & Button Accent:** `#1E293B` / `#0F766E` (Botones de acción de formulario y bordes de input estilizados)
+```
+com.aprendiz.educontrol
+│
+├── data/                       # Capa de Datos y Persistencia Local
+│   ├── AppDatabase.kt          # Singleton de Jetpack Room (educontrol_db)
+│   ├── dao/                    # Data Access Objects (Operaciones SQL)
+│   │   ├── UserDao.kt          # Consultas y registro de usuarios
+│   │   ├── MateriaDao.kt       # CRUD de asignaturas por usuario
+│   │   └── NotaDao.kt          # CRUD y sumatoria de notas/porcentajes
+│   └── entity/                 # Entidades / Tablas SQLite
+│       ├── UserEntity.kt       # Tabla 'users'
+│       ├── MateriaEntity.kt    # Tabla 'materias' (FK -> users.id)
+│       └── NotaEntity.kt       # Tabla 'notas' (FK -> materias.id)
+│
+└── ui/                         # Capa de Interfaz de Usuario (ViewBinding)
+    ├── splash/                 # SplashActivity (Pantalla de carga inicial)
+    ├── auth/                   # LoginActivity & RegisterActivity
+    ├── home/                   # HomeActivity, HomeAdapter & AddMateriaActivity
+    └── materia/                # DetalleMateriaActivity, NotasAdapter & AddNotaActivity
+```
 
-### 📌 Directriz de Datos de Demostración (Mock Data)
-> **Importante para desarrollo y pruebas:** Todos los ejemplos visuales y datos iniciales deben representar asignaturas y evaluaciones de **nivel escolar/colegio** (secundaria o bachillerato), tales como:
-> * **Materias:** *Matemáticas*, *Historia y Geografía*, *Biología*, *Inglés*, *Lengua Castellana*, *Educación Física*.
-> * **Tipos de Evaluaciones:** *Parcial 1 (Álgebra)*, *Quiz (Geometría)*, *Taller en Clase*, *Examen Final*, *Exposición Oral*.
-
----
-
-## 📋 Fases de Desarrollo
-
-### ⚙️ Fase 1: Configuración Inicial del Proyecto y Dependencias
-*Objetivo: Preparar el entorno en Android Studio asegurando el soporte para M3, ViewBinding y Room.*
-
-1. **Creación del Proyecto:**
-   * Tipo **Empty Views Activity** (Kotlin, Min SDK 24+).
-2. **Configuración de Gradle (`build.gradle.kts` - Module: app):**
-   * Habilitar **ViewBinding**:
-     ```kotlin
-     buildFeatures {
-         viewBinding = true
-     }
-     ```
-   * Dependencias necesarias:
-     ```kotlin
-     val roomVersion = "2.6.1"
-     implementation("androidx.room:room-runtime:$roomVersion")
-     implementation("androidx.room:room-ktx:$roomVersion")
-     ksp("androidx.room:room-compiler:$roomVersion") // O kapt según corresponda
-     implementation("com.google.android.material:material:1.11.0")
-     ```
-3. **Estructura Modular de Paquetes:**
-   * `data/local/` (Entities, DAOs, AppDatabase)
-   * `ui/splash/`
-   * `ui/auth/`
-   * `ui/home/` (Panel principal escolar)
-   * `ui/materia/` (Detalle de asignatura, lista de notas y formulario)
+### 🧰 Tecnologías Utilizadas
+* **Lenguaje:** Kotlin 1.9+ (Target JVM 21)
+* **SDK:** Min SDK 24 (Android 7.0) | Target & Compile SDK 34 (Android 14)
+* **UI & Layouts:** XML Layouts, `ConstraintLayout`, `Material Design 3 (M3)`, `ViewBinding`
+* **Persistencia Local:** Jetpack Room `2.6.1` con **KSP** (*Kotlin Symbol Processing*)
+* **Concurrencia:** Kotlin Coroutines (`lifecycleScope`, `Dispatchers.IO`, `withContext`)
+* **Navegación:** Activities e Intents explícitos con paso de parámetros (`USER_ID`, `MATERIA_ID`)
 
 ---
 
-### 🗄️ Fase 2: Capa de Datos y Persistencia (Room)
-*Objetivo: Diseñar el modelo relacional adaptado a asignaturas escolares y sus notas parciales.*
+## 🗄️ Modelo de Base de Datos (Relacional - Room)
 
-1. **Entidades (`@Entity`):**
-   * **`UserEntity`**: `id` (PK Auto), `email`, `password`.
-   * **`MateriaEntity`**: `id` (PK Auto), `userId` (FK), `nombreMateria` (ej: *Matemáticas*), `profesor` (ej: *Prof. García*).
-   * **`NotaEntity`**: `id` (PK Auto), `materiaId` (FK), `nombreEvaluacion` (ej: *Taller Ecuaciones*), `calificacion` (Double de 0.0 a 5.0), `porcentaje` (Double de 1% a 100%).
-2. **DAOs:**
-   * Operaciones suspendidas (`suspend fun`) para inserción, consulta de materias por estudiante y sumatoria de ponderaciones por materia (`SUM(porcentaje)`).
-3. **Base de Datos (`AppDatabase`):**
-   * Singleton thread-safe asegurando una única conexión local SQLite.
+El esquema relacional implementa claves foráneas (`ForeignKey`) con eliminación en cascada (`CASCADE`) e índices optimizados:
 
----
-
-### 🎨 Fase 3: Interfaz de Usuario - Pantallas de Acceso y Estilo Inicial
-*Objetivo: Experiencia de inicio atractiva y bienvenida alineada a la paleta esmeralda.*
-
-1. **`SplashActivity`:**
-   * Fondo menta claro con logo institucional o libro académico y transición diferida (2 seg) hacia `LoginActivity`.
-2. **`LoginActivity` y `RegisterActivity`:**
-   * Implementación de `ViewBinding` sin excepciones.
-   * `TextInputLayout` con esquinas redondeadas (`boxCornerRadius = 12dp`) e iconos ilustrativos.
-   * Validación local de correo y clave antes de disparar la consulta a Room.
+```
++------------------+         +-----------------------+         +--------------------------+
+|      users       |         |       materias        |         |          notas           |
++------------------+         +-----------------------+         +--------------------------+
+| id (PK Auto)     |<-------1| id (PK Auto)          |<-------1| id (PK Auto)             |
+| email (String)   |  (FK)   | userId (FK)           |  (FK)   | materiaId (FK)           |
+| password (String)|<--------| nombreMateria (String)|<--------| nombreEvaluacion (String)|
++------------------+         | profesor (String)     |         | calificacion (Double)    |
+                             +-----------------------+         | porcentaje (Double)      |
+                                                               +--------------------------+
+```
 
 ---
 
-### 🏠 Fase 4: Panel Principal Escolar (`HomeActivity`) y Tarjetas de Materia
-*Objetivo: Visualizar el desempeño global del estudiante mediante tarjetas temáticas.*
+## 🎨 Paleta de Colores y Estilo Visual
 
-1. **Diseño del Home (`activity_home.xml`):**
-   * **Hero Card Superior (Resumen):** Tarjeta destacada verde esmeralda/teal profundo (`#115E59`) mostrando el *Promedio Ponderado General* en tipografía grande (ej: `4.25 / 5.0`) y contador de asignaturas matriculadas.
-   * **Listado de Materias (`RecyclerView`):** Configurado con espaciado vertical y márgenes respirables.
-   * **Botón de Acción:** `ExtendedFloatingActionButton` inferior con icono y texto `+ Nueva Materia`.
-2. **Diseño de Tarjeta de Materia (`item_materia.xml`):**
-   * Contenedor `MaterialCardView` con radio de 16dp y borde tenue.
-   * Iconografía o cápsula de color identificador por materia escolar (ej: icono de compás/números para matemáticas, libro para historia).
-   * **Chip Badge de Calificación:** Contenedor redondeado con el promedio parcial de la materia coloreado dinámicamente (verde para aprobatorio, rojo para bajo).
-3. **Conexión de Datos:**
-   * Carga asíncrona mediante `lifecycleScope.launch(Dispatchers.IO)` actualizando el adaptador en el hilo principal.
+Para garantizar una experiencia limpia e intuitiva, se diseñó un tema personalizado en verde esmeralda y turquesa:
 
----
-
-### 📝 Fase 5: Detalle de Asignatura y Registro de Calificaciones
-*Objetivo: Control del avance porcentual y registro de notas individuales sin superar el 100%.*
-
-1. **Pantalla de Detalle (`DetalleMateriaActivity`):**
-   * Encabezado con el nombre de la materia escolar seleccionada (ej: *Matemáticas - Prof. García*).
-   * **Barra de Avance Ponderado:** `LinearProgressIndicator` que muestra el porcentaje acumulado calificado (ej: `70% / 100% Evaluado`), con color turquesa.
-   * **Listado de Evaluaciones:** `RecyclerView` con `item_nota.xml` (nombre de la actividad escolar, porcentaje individual y nota obtenida).
-2. **Formulario de Registro (`AddNotaActivity`):**
-   * Campos estructurados:
-     * *Nombre de la prueba:* Hint descriptivo (ej: *Examen Final*, *Taller Grupal*).
-     * *Puntaje obtenido:* Restricción numérica con ayuda visual (`0.0 - 5.0`).
-     * *Porcentaje:* Con sufijo `%` integrado.
-   * Botón principal de guardado con esquinas suaves y estilo sólido.
-3. **Lógica de Validación Ponderada:**
-   * Antes de almacenar en Room, verificar que `porcentajeActual + nuevoPorcentaje <= 100.0`. Si supera el tope, notificar error claro en el `TextInputLayout`.
+| Elemento / Rol | Código Hexadecimal | Descripción Visual |
+| :--- | :---: | :--- |
+| **Primary Emerald** | `#0D9488` | Color principal para encabezados, acentos y notas aprobatorias |
+| **Dark Teal Hero** | `#115E59` | Fondo del contenedor principal de resumen general (Hero Card) |
+| **Surface Background** | `#F0FDF4` | Fondo suave claro para reducir la fatiga visual |
+| **Badge Aprobado (BG / Text)** | `#DCFCE7` / `#15803D` | Fondo y texto verde para promedios/calificaciones ≥ 3.0 |
+| **Badge En Riesgo (BG / Text)** | `#FEE2E2` / `#B91C1C` | Fondo y texto rojo para promedios/calificaciones < 3.0 |
+| **Form Button Accent** | `#0F766E` | Color sólido para botones de acción y guardado |
 
 ---
 
-### 🧪 Fase 6: Pruebas Locales, Depuración y Estabilidad
-*Objetivo: Asegurar funcionamiento fluido sin cierres inesperados.*
+## ⚙️ Instrucciones de Instalación y Ejecución
 
-1. **Ciclo de Vida y Rotación:** Verificar que al girar la pantalla en cualquier Activity la información persista y `ViewBinding` no genere llamadas sobre vistas recicladas.
-2. **Seguridad de Hilos:** Ejecución rigurosa de todas las consultas a Room en `Dispatchers.IO` para prevenir `RoomCannotAccessDatabaseOnMainThreadException`.
-3. **Limpieza de Esquema:** En caso de alterar las entidades de Room, realizar `Build > Clean Project` y `Rebuild Project` para recompilar las clases generadas por KSP.
+1. **Clonar el repositorio:**
+   ```bash
+   git clone <URL_DEL_REPOSITORIO>
+   cd EduControl
+   ```
+2. **Abrir en Android Studio:**
+   * Abrir Android Studio (Iguana / Jellyfish / 2024.1+ recomendado).
+   * Seleccionar la carpeta raíz del proyecto `EduControl`.
+3. **Sincronizar Gradle:**
+   * Permitir que Gradle descargue las dependencias necesarias (`Room`, `Material Design`, `KSP`).
+4. **Ejecutar la App:**
+   * Seleccionar un emulador o dispositivo físico con **Android 7.0 (API 24)** o superior.
+   * Hacer clic en **Run** (`Shift + F10`).
+5. **Credenciales de Prueba Rápida:**
+   * **Email:** `test@educontrol.com`
+   * **Contraseña:** `123456`
+
+---
+
+## 📝 Licencia y Créditos
+
+Desarrollado como proyecto educativo para la gestión académica escolar en Android.
