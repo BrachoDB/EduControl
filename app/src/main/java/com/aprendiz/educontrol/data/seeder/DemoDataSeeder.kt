@@ -62,9 +62,9 @@ object DemoDataSeeder {
             )
 
             val actividadesIngles = listOf(
-                ActividadEntity(id = 7L, claseId = 2L, titulo = "Taller #1: Reading & Grammar", descripcion = "Lectura comprensiva e identificación de tiempos verbales.", tipo = ActividadEntity.TYPE_TASK, porcentaje = 15.0, fechaEntrega = "18 Ago", mesTimeline = "AGOSTO"),
-                ActividadEntity(id = 8L, claseId = 2L, titulo = "Quiz #1: Verb Tenses & Vocabulary", descripcion = "Quiz corto sobre verbos irregulares y conectores.", tipo = ActividadEntity.TYPE_QUIZ, porcentaje = 15.0, fechaEntrega = "05 Sep", mesTimeline = "SEPTIEMBRE"),
-                ActividadEntity(id = 9L, claseId = 2L, titulo = "Listening & Writing Exam", descripcion = "Evaluación de escucha y ensayo argumentativo.", tipo = ActividadEntity.TYPE_EXAM, porcentaje = 30.0, fechaEntrega = "25 Sep", mesTimeline = "SEPTIEMBRE")
+                ActividadEntity(id = 101L, claseId = 2L, titulo = "Reading & Vocabulary Task", descripcion = "Lectura comprensiva e identificación de vocabulario clave.", tipo = ActividadEntity.TYPE_TASK, porcentaje = 20.0, fechaEntrega = "18 Ago", mesTimeline = "AGOSTO"),
+                ActividadEntity(id = 102L, claseId = 2L, titulo = "Grammar Quiz", descripcion = "Cuestionario autocorregible sobre tiempos verbales y conectores.", tipo = ActividadEntity.TYPE_QUIZ, porcentaje = 20.0, fechaEntrega = "05 Sep", mesTimeline = "SEPTIEMBRE"),
+                ActividadEntity(id = 103L, claseId = 2L, titulo = "Listening & Speaking Exam", descripcion = "Evaluación de escucha y expresión oral.", tipo = ActividadEntity.TYPE_EXAM, porcentaje = 30.0, fechaEntrega = "20 Oct", mesTimeline = "OCTUBRE")
             )
 
             db.actividadDao().insertActividades(actividadesMatematicas + actividadesIngles)
@@ -101,11 +101,11 @@ object DemoDataSeeder {
             seedStudentClass1(5L, "Mateo", mateoGradesMat)
 
             // --- CLASS 2 (Inglés 10° - Prof. Carolina) ---
-            val santiagoGradesIng = mapOf(7L to 4.6, 8L to 4.4, 9L to 4.5)
-            val lauraGradesIng = mapOf(7L to 3.6, 8L to 3.5, 9L to 3.7)
-            val carlosGradesIng = mapOf(7L to 2.6, 8L to 2.8)
-            val valentinaGradesIng = mapOf(7L to 3.8, 8L to 3.4, 9L to 3.6)
-            val mateoGradesIng = mapOf(7L to 2.8, 8L to 2.5, 9L to 2.6)
+            val santiagoGradesIng = mapOf(101L to 4.6, 102L to 4.5, 103L to 4.4)
+            val lauraGradesIng = mapOf(101L to 3.6, 102L to 3.5, 103L to 3.7)
+            val carlosGradesIng = mapOf(101L to 2.8, 102L to 2.5)
+            val valentinaGradesIng = mapOf(101L to 3.5, 102L to 3.6, 103L to 3.7)
+            val mateoGradesIng = mapOf(101L to 2.5, 102L to 2.6, 103L to 2.7)
 
             fun seedStudentClass2(studentId: Long, name: String, grades: Map<Long, Double>) {
                 for ((actId, notaVal) in grades) {
@@ -119,15 +119,15 @@ object DemoDataSeeder {
             seedStudentClass2(1L, "Santiago", santiagoGradesIng)
             seedStudentClass2(2L, "Laura", lauraGradesIng)
             seedStudentClass2(3L, "Carlos", carlosGradesIng)
-            // Carlos Act 9 Pending for English
-            entregas.add(EntregaEntity(id = entregaId++, actividadId = 9L, studentId = 3L, contenidoRespuesta = null, fechaEntrega = "25 Sep", estado = EntregaEntity.STATUS_PENDING))
+            // Carlos Act 103 Pending for English
+            entregas.add(EntregaEntity(id = entregaId++, actividadId = 103L, studentId = 3L, contenidoRespuesta = null, fechaEntrega = "20 Oct", estado = EntregaEntity.STATUS_PENDING))
             seedStudentClass2(4L, "Valentina", valentinaGradesIng)
             seedStudentClass2(5L, "Mateo", mateoGradesIng)
 
             db.entregaDao().insertEntregas(entregas)
             db.calificacionDao().insertCalificaciones(calificaciones)
 
-            // 6. Seed Quiz Questions for Act 2 (Math Quiz) & Act 8 (English Quiz)
+            // 6. Seed Quiz Questions for Act 2 (Math Quiz) & Act 102 (English Quiz)
             val preguntasQuiz = listOf(
                 PreguntaQuizEntity(
                     id = 1L,
@@ -151,7 +151,7 @@ object DemoDataSeeder {
                 ),
                 PreguntaQuizEntity(
                     id = 3L,
-                    actividadId = 8L,
+                    actividadId = 102L,
                     enunciado = "Select the correct past participle of the verb 'To Speak':",
                     opcionA = "Speaked",
                     opcionB = "Spoke",
@@ -161,7 +161,7 @@ object DemoDataSeeder {
                 ),
                 PreguntaQuizEntity(
                     id = 4L,
-                    actividadId = 8L,
+                    actividadId = 102L,
                     enunciado = "Which connector best expresses contrast?",
                     opcionA = "Furthermore",
                     opcionB = "However",
