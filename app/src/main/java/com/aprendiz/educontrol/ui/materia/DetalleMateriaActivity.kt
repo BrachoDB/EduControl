@@ -48,12 +48,7 @@ class DetalleMateriaActivity : AppCompatActivity() {
         setupRecyclerView()
         setupSimulador()
 
-        binding.fabNuevaNota.setOnClickListener {
-            val intent = Intent(this, AddNotaActivity::class.java)
-            intent.putExtra("MATERIA_ID", materiaId)
-            intent.putExtra("PORCENTAJE_ACUMULADO", porcentajeAcumulado)
-            startActivity(intent)
-        }
+        binding.fabNuevaNota.visibility = View.GONE
     }
 
     override fun onResume() {

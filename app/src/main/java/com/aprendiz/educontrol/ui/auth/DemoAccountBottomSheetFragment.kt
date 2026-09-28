@@ -80,8 +80,8 @@ class DemoAccountBottomSheetFragment : BottomSheetDialogFragment() {
             )
         } else {
             listOf(
-                DemoAccountModel(101L, "Prof. Andrés", SessionManager.ROLE_TEACHER, "Matemáticas 10° y Física 10°", "andres@educontrol.com", "👨‍🏫"),
-                DemoAccountModel(102L, "Prof. Carolina", SessionManager.ROLE_TEACHER, "Inglés 10° y Química 10°", "carolina@educontrol.com", "👩‍🏫")
+                DemoAccountModel(101L, "Prof. Andrés", SessionManager.ROLE_TEACHER, "Docente de Matemáticas 10°", "andres@educontrol.com", "👨‍🏫"),
+                DemoAccountModel(102L, "Prof. Carolina", SessionManager.ROLE_TEACHER, "Docente de Inglés 10°", "carolina@educontrol.com", "👩‍🏫")
             )
         }
     }

@@ -116,19 +116,22 @@ class TeacherRepository(context: Context) {
 
             if (students.isNotEmpty()) {
                 for (student in students) {
-                    var promedioEstudianteEnClase = 0.0
+                    var puntosAcumulados = 0.0
+                    var pctEvaluadoEstudiante = 0.0
                     for (act in actividades) {
                         val entrega = db.entregaDao().getEntrega(act.id, student.id)
                         if (entrega != null) {
                             val calificacion = db.calificacionDao().getCalificacionByEntrega(entrega.id)
                             if (calificacion != null) {
-                                promedioEstudianteEnClase += calificacion.nota * (act.porcentaje / 100.0)
+                                puntosAcumulados += calificacion.nota * (act.porcentaje / 100.0)
+                                pctEvaluadoEstudiante += act.porcentaje
                             } else if (entrega.estado == EntregaEntity.STATUS_SUBMITTED) {
                                 pendingGradingCount++
                             }
                         }
                     }
-                    sumaPromediosEstudiantes += promedioEstudianteEnClase
+                    val notaEstudianteNorm = if (pctEvaluadoEstudiante > 0) (puntosAcumulados / (pctEvaluadoEstudiante / 100.0)) else 0.0
+                    sumaPromediosEstudiantes += notaEstudianteNorm
                 }
 
                 for (act in actividades) {
@@ -179,26 +182,29 @@ class TeacherRepository(context: Context) {
         var sumaPromediosEstudiantes = 0.0
 
         for (student in students) {
-            var promedioEstudiante = 0.0
+            var puntosAcumulados = 0.0
+            var pctEvaluadoEstudiante = 0.0
             for (act in actividades) {
                 val entrega = db.entregaDao().getEntrega(act.id, student.id)
                 if (entrega != null) {
                     val calificacion = db.calificacionDao().getCalificacionByEntrega(entrega.id)
                     if (calificacion != null) {
-                        promedioEstudiante += calificacion.nota * (act.porcentaje / 100.0)
+                        puntosAcumulados += calificacion.nota * (act.porcentaje / 100.0)
+                        pctEvaluadoEstudiante += act.porcentaje
                     }
                 }
             }
+            val notaEstudianteNorm = if (pctEvaluadoEstudiante > 0) (puntosAcumulados / (pctEvaluadoEstudiante / 100.0)) else 0.0
             studentSummaries.add(
                 TeacherStudentSummaryModel(
                     studentId = student.id,
                     nombre = student.nombre,
                     email = student.email,
                     avatarEmoji = student.avatarEmoji,
-                    promedioClase = promedioEstudiante
+                    promedioClase = notaEstudianteNorm
                 )
             )
-            sumaPromediosEstudiantes += promedioEstudiante
+            sumaPromediosEstudiantes += notaEstudianteNorm
         }
 
         var porcentajeEvaluadoCurso = 0.0
@@ -332,18 +338,20 @@ class TeacherRepository(context: Context) {
                 )
             }
 
+            val promedioMateriaNorm = if (porcentajeEvaluadoMateria > 0) (promedioMateria / (porcentajeEvaluadoMateria / 100.0)) else 0.0
+
             breakdownList.add(
                 StudentClassBreakdownModel(
                     claseId = clase.id,
                     nombreClase = clase.nombreClase,
                     codigoClase = clase.codigoClase,
-                    promedioMateria = promedioMateria,
+                    promedioMateria = promedioMateriaNorm,
                     porcentajeEvaluado = porcentajeEvaluadoMateria,
                     actividades = activityItems
                 )
             )
 
-            sumaPromedios += promedioMateria
+            sumaPromedios += promedioMateriaNorm
         }
 
         val promedioGeneralDocente = if (enrolledTeacherClasses.isNotEmpty()) sumaPromedios / enrolledTeacherClasses.size else 0.0

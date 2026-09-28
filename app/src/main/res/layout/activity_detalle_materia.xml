@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        android:paddingBottom="80dp">
+        android:paddingBottom="40dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -201,7 +201,7 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- FAB for adding new Nota -->
+    <!-- FAB for adding new Nota (Disabled in Student View) -->
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fabNuevaNota"
         android:layout_width="wrap_content"
@@ -210,6 +210,7 @@
         android:layout_margin="16dp"
         android:text="@string/nueva_nota"
         android:textColor="@color/white"
+        android:visibility="gone"
         app:backgroundTint="@color/primary_emerald"
         app:iconTint="@color/white"
         app:icon="@android:drawable/ic_input_add" />

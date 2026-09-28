@@ -126,14 +126,16 @@ class StudentRepository(context: Context) {
                 }
             }
 
+            val promedioClaseNorm = if (porcentajeEvaluadoClase > 0) (promedioPonderadoClase / (porcentajeEvaluadoClase / 100.0)) else 0.0
+
             classSummaries.add(
                 StudentClassSummaryModel(
                     claseId = clase.id, nombreClase = clase.nombreClase, profesor = teacherName,
-                    promedio = promedioPonderadoClase, porcentajeEvaluado = porcentajeEvaluadoClase, colorTheme = clase.colorTheme
+                    promedio = promedioClaseNorm, porcentajeEvaluado = porcentajeEvaluadoClase, colorTheme = clase.colorTheme
                 )
             )
 
-            sumaPromedios += promedioPonderadoClase
+            sumaPromedios += promedioClaseNorm
             sumaPorcentajesEvaluados += porcentajeEvaluadoClase
         }
 
@@ -209,12 +211,14 @@ class StudentRepository(context: Context) {
             timelineList.addAll(items)
         }
 
+        val promedioActualNorm = if (porcentajeEvaluadoClase > 0) (promedioPonderadoClase / (porcentajeEvaluadoClase / 100.0)) else 0.0
+
         StudentClassDetailData(
             claseId = clase.id,
             nombreClase = clase.nombreClase,
             codigoClase = clase.codigoClase,
             profesor = teacherName,
-            promedioActual = promedioPonderadoClase,
+            promedioActual = promedioActualNorm,
             porcentajeEvaluado = porcentajeEvaluadoClase,
             colorTheme = clase.colorTheme,
             timelineItems = timelineList

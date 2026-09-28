@@ -6,15 +6,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import com.aprendiz.educontrol.data.repository.TeacherRepository
 import com.aprendiz.educontrol.data.session.SessionManager
 import com.aprendiz.educontrol.databinding.FragmentTeacherProfileBinding
 import com.aprendiz.educontrol.ui.auth.DemoRoleActivity
+import kotlinx.coroutines.launch
 
 class TeacherProfileFragment : Fragment() {
 
     private var _binding: FragmentTeacherProfileBinding? = null
     private val binding get() = _binding!!
     private lateinit var sessionManager: SessionManager
+    private lateinit var teacherRepository: TeacherRepository
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -28,7 +32,17 @@ class TeacherProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         sessionManager = SessionManager(requireContext())
+        teacherRepository = TeacherRepository(requireContext())
+
+        val teacherId = sessionManager.getCurrentUserId()
         binding.tvTeacherProfileName.text = sessionManager.getCurrentUserName()
+        binding.tvTeacherProfileEmail.text = sessionManager.getCurrentEmail()
+
+        lifecycleScope.launch {
+            val dashboardData = teacherRepository.getTeacherDashboardData(teacherId)
+            binding.tvTeacherClassesCount.text = "${dashboardData.totalClases}"
+            binding.tvTeacherStudentsCount.text = "${dashboardData.totalEstudiantes}"
+        }
 
         binding.btnTeacherLogout.setOnClickListener {
             sessionManager.clearSession()
