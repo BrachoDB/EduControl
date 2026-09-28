@@ -1,43 +1,58 @@
-# Plan de Implementación - Fase 3: Interfaz de Usuario - Pantallas de Autenticación y Splash
+# Plan de Implementación - Fases 4 y 5: Pantalla Principal y Detalle de Materias
 
-Este plan cubre el desarrollo del flujo inicial de la aplicación, incluyendo la pantalla de bienvenida (Splash) y la gestión de usuarios (Login y Registro).
+Este plan cubre el desarrollo de la `HomeActivity` (Fase 4), donde se listarán las materias del usuario y su promedio general, y el flujo de registro y detalle de notas (Fase 5).
 
 ## User Review Required
 
 > [!IMPORTANT]
-> Se utilizará `ViewBinding` para la interacción con las vistas.
-> Las actividades se registrarán en el `AndroidManifest.xml`.
-> La navegación inicial será: Splash -> Login -> Register (si es necesario) -> Home (pendiente de Fase 4).
+> Estas fases involucran el paso de datos entre Activities usando `Intent` (específicamente el `userId` para saber de quién son las materias, y el `materiaId` para las notas).
+> Modificaremos el `LoginActivity` para que envíe el ID del usuario al `HomeActivity` al iniciar sesión con éxito.
 
 ## Proposed Changes
 
-### [Componente] UI - Pantallas de Inicio
+### [Componente] Fase 4: Home y Listado de Materias
 
-#### [NEW] [activity_splash.xml](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/res/layout/activity_splash.xml)
-Diseño simple con un logo (o texto representativo) y el nombre de la app.
+#### [NEW] [activity_home.xml](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/res/layout/activity_home.xml)
+- `TextView` destacado para el Promedio General.
+- `RecyclerView` para la lista de materias.
+- `FloatingActionButton` (FAB) para agregar una nueva materia.
 
-#### [NEW] [SplashActivity.kt](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/java/com/aprendiz/educontrol/ui/splash/SplashActivity.kt)
-Lógica para esperar 2 segundos usando `lifecycleScope` y navegar a `LoginActivity`.
+#### [NEW] [item_materia.xml](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/res/layout/item_materia.xml)
+Diseño de la tarjeta (`MaterialCardView`) para cada materia, mostrando nombre, profesor y promedio de la materia.
 
-#### [NEW] [activity_login.xml](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/res/layout/activity_login.xml)
-Formulario de ingreso: Email, Password, Botón de Login y enlace a Registro.
+#### [NEW] [MateriaAdapter.kt](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/java/com/aprendiz/educontrol/ui/home/MateriaAdapter.kt)
+Adaptador del RecyclerView para gestionar la lista de `MateriaEntity`. Incluirá un listener para los clics en cada tarjeta.
 
-#### [NEW] [LoginActivity.kt](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/java/com/aprendiz/educontrol/ui/auth/LoginActivity.kt)
-Lógica de autenticación consultando la base de datos Room.
+#### [NEW] [HomeActivity.kt](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/java/com/aprendiz/educontrol/ui/home/HomeActivity.kt)
+Lógica para recuperar el `userId` del intent, cargar las materias desde Room y calcular el promedio general.
 
-#### [NEW] [activity_register.xml](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/res/layout/activity_register.xml)
-Formulario de registro: Email, Password y Botón de Crear Cuenta.
+---
 
-#### [NEW] [RegisterActivity.kt](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/java/com/aprendiz/educontrol/ui/auth/RegisterActivity.kt)
-Lógica para insertar nuevos usuarios en Room, validando que el email no esté duplicado.
+### [Componente] Fase 5: Formularios y Detalle de Evaluaciones
+
+#### [NEW] [activity_add_materia.xml](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/res/layout/activity_add_materia.xml) y [AddMateriaActivity.kt](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/java/com/aprendiz/educontrol/ui/materia/AddMateriaActivity.kt)
+Formulario para crear una nueva materia vinculada al usuario actual.
+
+#### [NEW] [activity_detalle_materia.xml](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/res/layout/activity_detalle_materia.xml) y [DetalleMateriaActivity.kt](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/java/com/aprendiz/educontrol/ui/materia/DetalleMateriaActivity.kt)
+Pantalla que muestra los detalles de una materia seleccionada, incluyendo un `RecyclerView` con sus notas específicas y un FAB para agregar notas.
+
+#### [NEW] [item_nota.xml](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/res/layout/item_nota.xml) y [NotaAdapter.kt](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/java/com/aprendiz/educontrol/ui/materia/NotaAdapter.kt)
+Diseño y adaptador para listar las evaluaciones (ej. "Parcial 1 - 4.5 [30%]").
+
+#### [NEW] [activity_add_nota.xml](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/res/layout/activity_add_nota.xml) y [AddNotaActivity.kt](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/java/com/aprendiz/educontrol/ui/materia/AddNotaActivity.kt)
+Formulario para registrar una evaluación. Incluirá validación para asegurar que la suma de porcentajes de las notas de la materia no exceda el 100%.
+
+#### [MODIFY] [LoginActivity.kt](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/java/com/aprendiz/educontrol/ui/auth/LoginActivity.kt)
+Reemplazar el `// TODO` por el intent de navegación hacia `HomeActivity`, pasando el `user.id`.
 
 #### [MODIFY] [AndroidManifest.xml](file:///C:/Users/Aprendiz/AndroidStudioProjects/EduControl/app/src/main/AndroidManifest.xml)
-Declaración de las nuevas actividades y configuración de `SplashActivity` como la actividad de inicio (`LAUNCHER`).
+Registrar las 4 nuevas actividades.
 
 ## Verification Plan
 
 ### Manual Verification
-1. Ejecutar la app y verificar que se muestre el Splash durante 2 segundos.
-2. Comprobar la transición automática a la pantalla de Login.
-3. Probar el registro de un nuevo usuario y verificar que se guarde correctamente (intentando loguearse después).
-4. Validar que los campos vacíos muestren errores visuales.
+1. Loguearse con un usuario. Verificar transición al Home.
+2. Crear una materia y verificar que aparezca en el RecyclerView.
+3. Entrar al detalle de la materia y agregar 2 notas.
+4. Validar que no se pueda exceder el 100% en las notas.
+5. Volver al Home y validar que el promedio general se haya recalculado.
