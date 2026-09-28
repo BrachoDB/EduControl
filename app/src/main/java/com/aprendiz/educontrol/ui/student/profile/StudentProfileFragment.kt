@@ -40,6 +40,12 @@ class StudentProfileFragment : Fragment() {
         binding.tvProfileEmail.text = sessionManager.getCurrentEmail()
 
         lifecycleScope.launch {
+            val user = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                com.aprendiz.educontrol.data.AppDatabase.getDatabase(requireContext()).userDao().getUserById(studentId)
+            }
+            if (user != null) {
+                binding.tvStudentAvatar.text = user.avatarEmoji
+            }
             val dashboardData = studentRepository.getStudentDashboardData(studentId)
             binding.tvClassesCount.text = "${dashboardData.classes.size}"
             binding.tvOverallGPA.text = String.format(Locale.getDefault(), "%.2f", dashboardData.promedioGeneral)

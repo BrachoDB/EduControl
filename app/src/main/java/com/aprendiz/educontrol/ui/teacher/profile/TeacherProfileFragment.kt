@@ -39,6 +39,12 @@ class TeacherProfileFragment : Fragment() {
         binding.tvTeacherProfileEmail.text = sessionManager.getCurrentEmail()
 
         lifecycleScope.launch {
+            val user = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                com.aprendiz.educontrol.data.AppDatabase.getDatabase(requireContext()).userDao().getUserById(teacherId)
+            }
+            if (user != null) {
+                binding.tvTeacherAvatar.text = user.avatarEmoji
+            }
             val dashboardData = teacherRepository.getTeacherDashboardData(teacherId)
             binding.tvTeacherClassesCount.text = "${dashboardData.totalClases}"
             binding.tvTeacherStudentsCount.text = "${dashboardData.totalEstudiantes}"

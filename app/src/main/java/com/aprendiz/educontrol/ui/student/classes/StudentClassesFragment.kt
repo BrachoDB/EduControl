@@ -44,6 +44,7 @@ class StudentClassesFragment : Fragment() {
     private fun setupAdapter() {
         classAdapter = StudentClassAdapter { selectedClass ->
             val intent = Intent(requireContext(), DetalleMateriaActivity::class.java)
+            intent.putExtra("CLASE_ID", selectedClass.claseId)
             intent.putExtra("MATERIA_ID", selectedClass.claseId)
             startActivity(intent)
         }
