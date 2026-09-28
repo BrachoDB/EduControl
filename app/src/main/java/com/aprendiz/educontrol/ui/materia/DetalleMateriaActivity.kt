@@ -94,13 +94,14 @@ class DetalleMateriaActivity : AppCompatActivity() {
             return
         }
 
-        val puntosNecesarios = targetGrade - promedioPonderadoAcumulado
+        val puntosAcumulados = promedioPonderadoAcumulado * (porcentajeAcumulado / 100.0)
+        val puntosNecesarios = targetGrade - puntosAcumulados
         val porcentajeRestanteTexto = String.format(Locale.getDefault(), "%.0f", porcentajeRestante)
 
         binding.tvResultadoSimulador.visibility = View.VISIBLE
 
         if (puntosNecesarios <= 0) {
-            val acumuladoTexto = String.format(Locale.getDefault(), "%.2f", promedioPonderadoAcumulado)
+            val acumuladoTexto = String.format(Locale.getDefault(), "%.2f", puntosAcumulados)
             val metaTexto = String.format(Locale.getDefault(), "%.2f", targetGrade)
             binding.tvResultadoSimulador.text = getString(R.string.simulador_meta_ya_alcanzada, acumuladoTexto, metaTexto)
             binding.tvResultadoSimulador.setBackgroundResource(R.drawable.bg_chip_approved)

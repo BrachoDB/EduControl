@@ -53,8 +53,9 @@ class StudentGoalAdapter : RecyclerView.Adapter<StudentGoalAdapter.ViewHolder>()
                 val input = binding.etTargetGrade.text?.toString()?.trim()
                 val targetGrade = input?.toDoubleOrNull() ?: 4.0
 
+                val puntosAcumulados = item.promedio * (item.porcentajeEvaluado / 100.0)
                 val res = ProjectionCalculator.calculateProjection(
-                    promedioAcumulado = item.promedio,
+                    promedioAcumulado = puntosAcumulados,
                     porcentajeEvaluado = item.porcentajeEvaluado,
                     notaObjetivo = targetGrade
                 )

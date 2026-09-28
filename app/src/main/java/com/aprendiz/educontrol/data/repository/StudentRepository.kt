@@ -139,7 +139,10 @@ class StudentRepository(context: Context) {
             sumaPorcentajesEvaluados += porcentajeEvaluadoClase
         }
 
-        val promedioGeneral = if (clases.isNotEmpty()) sumaPromedios / clases.size else 0.0
+        val clasesEvaluadas = classSummaries.filter { it.porcentajeEvaluado > 0 }
+        val promedioGeneral = if (clasesEvaluadas.isNotEmpty()) {
+            clasesEvaluadas.sumOf { it.promedio } / clasesEvaluadas.size
+        } else 0.0
         val porcentajeEvaluadoGlobal = if (clases.isNotEmpty()) sumaPorcentajesEvaluados / clases.size else 0.0
 
         val atRiskClass = classSummaries.firstOrNull { it.promedio < 3.0 && it.porcentajeEvaluado > 0 }
